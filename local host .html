@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tyler Quote Hub</title>
+  <style>
+    :root {
+      --bg1: #0b1220;
+      --bg2: #1a1f2f;
+      --glass: rgba(255,255,255,0.08);
+      --border: rgba(255,255,255,0.18);
+      --text: #e8f0ff;
+      --muted: #b7c5d9;
+      --accent: #ff9ac1;
+      --accent2: #9acfff;
+      --shadow: 0 30px 80px rgba(0,0,0,0.45);
+    }
+
+    html, body {
+      margin: 0;
+      height: 100%;
+      font-family: Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% 10%, rgba(90,176,255,0.25), transparent 60%),
+        radial-gradient(900px 500px at 90% 90%, rgba(255,154,193,0.22), transparent 60%),
+        linear-gradient(180deg, var(--bg1), var(--bg2));
+      color: var(--text);
+    }
+
+    .center { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+
+    .card {
+      width: min(720px, 92vw);
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      box-shadow: var(--shadow);
+      padding: 26px;
+      animation: fadeIn 0.5s ease;
+    }
+
+    .title { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .title h1 { font-size: 22px; margin: 0; letter-spacing: 0.4px; color: var(--muted); }
+
+    .quote {
+      font-size: 22px;
+      line-height: 1.55;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 20px;
+    }
+
+    .footer { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+    .btn {
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.12);
+      color: var(--text);
+      cursor: pointer;
+      transition: transform 0.05s ease, background 0.2s ease;
+    }
+    .btn:hover { background: rgba(255,255,255,0.25); }
+    .btn:active { transform: translateY(1px); }
+
+    .btn.primary {
+      background: linear-gradient(180deg, var(--accent), #ffd6e6);
+      color: #1f1f1f;
+    }
+    .btn.secondary {
+      background: linear-gradient(180deg, var(--accent2), #e4f1ff);
+      color: #1f1f1f;
+    }
+
+    .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <!-- Autoplay Balloon instrumental -->
+  <audio id="balloonAudio" src="Balloon.mp3" autoplay loop></audio>
+
+  <main class="center">
+    <section class="card">
+      <div class="title">
+        <h1>Random Tyler, the Creator Quote</h1>
+        <button id="newBtn" class="btn primary" title="Get new quote (Space)">New quote</button>
+      </div>
+
+      <div id="quoteBox" class="quote">Loading…</div>
+
+      <div class="footer">
+        <button id="copyBtn" class="btn" title="Copy to clipboard">Copy</button>
+        <button id="tweetBtn" class="btn secondary" title="Share on X">Tweet</button>
+      </div>
+
+      <div class="hint">Press Space for a new quote. Balloon instrumental plays in the background.</div>
+    </section>
+  </main>
+
+  <script>
+    const quotes = [
+      "If you want to do something, just do it.",
+      "Believe in yourself and do what feels right.",
+      "Don’t let anyone tell you who you are.",
+      "Embrace the things that make you different.",
+      "Create the world you want to live in.",
+      "Growth comes from trying new things.",
+      "Be honest with your feelings and your art.",
+      "Make what you love, even if no one gets it yet.",
+      "It’s okay to change—change means you’re alive.",
+      "Your imagination is the best tool you have.",
+      // silly extras
+      "I dress like I’m in a cartoon, because life is boring without color.",
+      "I ate a cockroach once, just to prove a point.",
+      "I make songs about waffles, because why not.",
+      "I want a mansion shaped like a shoe.",
+      "I rap about glitter because it sticks to everything.",
+      "I once wanted to be a professional ice cream man.",
+      "I like making beats that sound like a car crash but in pastel.",
+      "I’m the president of making weird faces in photos.",
+      "I skateboard like a grandma but I’m cool with it.",
+      "I want my album covers to look like fake passports."
+    ];
+
+    const quoteBox = document.getElementById('quoteBox');
+    const newBtn = document.getElementById('newBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const tweetBtn = document.getElementById('tweetBtn');
+    const audio = document.getElementById('balloonAudio');
+
+    function getRandomQuote() {
+      const idx = Math.floor(Math.random() * quotes.length);
+      return quotes[idx];
+    }
+
+    function renderQuote() {
+      const q = getRandomQuote();
+      quoteBox.textContent = `"${q}" — Tyler, the Creator`;
+    }
+
+    renderQuote();
+
+    newBtn.addEventListener('click', renderQuote);
+
+    copyBtn.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(quoteBox.textContent);
+        copyBtn.textContent = 'Copied!';
+        setTimeout(() => copyBtn.textContent = 'Copy', 900);
+      } catch (e) {
+        alert('Copy failed. Select and copy manually.');
+      }
+    });
+
+    tweetBtn.addEventListener('click', () => {
+      const text = encodeURIComponent(quoteBox.textContent + " #TylerTheCreator");
+      const url = "https://twitter.com/intent/tweet?text=" + text;
+      window.open(url, "_blank");
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        renderQuote();
+        if (audio.paused) audio.play(); // ensures audio starts if blocked
+      }
+    });
+
+    document.addEventListener('click', () => {
+      if (audio.paused) audio.play();
+    });
+  </script>
+</body>
+</html>
